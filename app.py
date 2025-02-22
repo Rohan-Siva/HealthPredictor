@@ -119,17 +119,19 @@ def chat():
 def update_health_data():
     from risk_model import predict_heart_disease_risk
     data = request.json
+    risk_score = predict_heart_disease_risk(data)
+
     health_data = HealthData(
         user_id=current_user.id,
         blood_pressure=data.get('blood_pressure'),
         heart_rate=data.get('heart_rate'),
         temperature=data.get('temperature'),
-        weight=data.get('weight')
+        weight=data.get('weight'),
+        risk_score = risk_score
     )
     db.session.add(health_data)
     db.session.commit()
 
-    risk_score = predict_heart_disease_risk(data)
     return jsonify({
         'message': 'Data updated successfully',
         'risk_score': risk_score
