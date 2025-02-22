@@ -19,4 +19,4 @@ class HealthData(db.Model):
     weight = db.Column(db.Float)
     risk_score = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    cholesterol = db.Column(db.Integer)
+    cholesterol = db.Column(db.Float)

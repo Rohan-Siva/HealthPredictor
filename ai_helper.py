@@ -52,6 +52,7 @@ def get_chatbot_response(message, user_id):
                     f"- Heart Rate: {data['heart_rate'] or 'Not recorded'} bpm\n"
                     f"- Body Temperature: {data['temperature'] or 'Not recorded'} °C\n"
                     f"- Weight: {data['weight'] or 'Not recorded'} kg\n"
+                    f"- Cholesterol: {data['cholesterol'] or 'Not recorded'} mg/dL\n"
                     f"- Risk Score: {risk_score_text} (represents the probability of developing heart disease)\n"
                     f"- Timestamp: {data['timestamp']}\n\n"
                     "When asked about specific metrics, reply with the actual values from this data if available."

@@ -30,7 +30,8 @@ def get_health_data_summary(user_id): # return the health data based on user id
             'temperature': latest.temperature,
             'weight': latest.weight,
             'risk_score': latest.risk_score,
-            'timestamp': latest.timestamp
+            'timestamp': latest.timestamp,
+            'cholesterol': latest.cholesterol
         },
         'count': len(data)
     }
