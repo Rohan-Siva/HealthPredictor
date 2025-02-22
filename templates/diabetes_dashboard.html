@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Diabetes Metrics</h4>
+                <canvas id="diabetesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4 class="card-title">Update Diabetes Data</h4>
+                <form id="diabetesDataForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-control" name="age" required min="0" max="120">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" name="gender" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">BMI</label>
+                            <input type="number" class="form-control" name="bmi" required step="0.1" min="10" max="60">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Blood Glucose Level (mg/dL)</label>
+                            <input type="number" class="form-control" name="blood_glucose_level" required min="70" max="300">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">HbA1c Level (%)</label>
+                            <input type="number" class="form-control" name="hba1c_level" required step="0.1" min="3" max="9">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Smoking History</label>
+                            <select class="form-select" name="smoking_history" required>
+                                <option value="never">Never</option>
+                                <option value="current">Current</option>
+                                <option value="former">Former</option>
+                                <option value="ever">Ever</option>
+                                <option value="not current">Not Current</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Hypertension</label>
+                            <select class="form-select" name="hypertension" required>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Heart Disease</label>
+                            <select class="form-select" name="heart_disease" required>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Update Data</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="card-title">Risk Analysis</h4>
+                <div id="diabetesRiskScore" class="text-center">
+                    <div class="display-4">--%</div>
+                    <p class="text-muted">Diabetes Risk</p>
+                    <div class="risk-level mt-2"></div>
+                    <p class="risk-advice text-muted small"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Medical Assistant</h4>
+                <div id="diabetesChatMessages" class="chat-container mb-3"></div>
+                <form id="diabetesChatForm" class="d-flex">
+                    <input type="text" class="form-control" id="diabetesChatInput" placeholder="Ask about diabetes...">
+                    <button type="submit" class="btn btn-primary ms-2">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/diabetes_charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/diabetes_chat.js') }}"></script>
+{% endblock %}
