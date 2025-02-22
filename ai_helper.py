@@ -12,42 +12,52 @@ genai.configure(api_key=os.getenv('GEMINI_API_KEY'),
                 client_options={"api_endpoint": "generativelanguage.googleapis.com"})
 
 def get_chatbot_response(message, user_id):
-    summary = get_health_data_summary(user_id)
-    data = summary['latest']
-    
     try:
+        # Get health data summary
+        summary = get_health_data_summary(user_id)
+        data = summary['latest'] if summary else None
+
         # Create a Gemini model instance
         model = genai.GenerativeModel('gemini-pro')
 
         # Create a chat instance with the system prompt
         chat = model.start_chat(history=[
-    {
-        "role": "user",
-        "parts": [
-            "You are a helpful medical assistant. Provide accurate, cautious, and evidence-based information related to heart disease risks. Always advise consulting healthcare professionals for personalized medical advice."
-        ]
-    },
-    {
-        "role": "model",
-        "parts": [
-            "I understand. I will provide general health information about heart disease while emphasizing the importance of consulting healthcare professionals for personalized advice."
-        ]
-    },
-    {
-        "role": "user",
-        "parts": [
-            f"Here is the patient's latest health data:\n"
-            f"- Blood Pressure: {data['blood_pressure']} mmHg\n"
-            f"- Heart Rate: {data['heart_rate']} bpm\n"
-            f"- Body Temperature: {data['temperature']} °C\n"
-            f"- Weight: {data['weight']} kg\n"
-            f"- Risk Score: {data['risk_score']}% (represents the probability of developing heart disease)\n"
-            f"- Timestamp: {data['timestamp']}\n\n"
-            "Based on this information, provide general insights on potential heart disease risks and answer their queries."
-        ]
-    }
-])
+            {
+                "role": "user",
+                "parts": [
+                    "You are a helpful medical assistant. Provide accurate, cautious, and evidence-based information related to health metrics. "
+                    "When asked about specific health metrics, check the provided health data and give clear answers about the values present. "
+                    "If a value is not available or null, clearly state that. Always advise consulting healthcare professionals for personalized medical advice."
+                ]
+            },
+            {
+                "role": "model",
+                "parts": [
+                    "I understand. I will provide information about health metrics from the available data while emphasizing the importance of consulting healthcare professionals for personalized advice."
+                ]
+            }
+        ])
 
+        # Add user's health context if available
+        if data:
+            risk_score_text = "Not calculated"
+            if data['risk_score'] is not None:
+                risk_score_text = f"{data['risk_score'] * 100:.1f}%"
+
+            context = {
+                "role": "user",
+                "parts": [
+                    f"Here is the patient's latest health data:\n"
+                    f"- Blood Pressure: {data['blood_pressure'] or 'Not recorded'} mmHg\n"
+                    f"- Heart Rate: {data['heart_rate'] or 'Not recorded'} bpm\n"
+                    f"- Body Temperature: {data['temperature'] or 'Not recorded'} °C\n"
+                    f"- Weight: {data['weight'] or 'Not recorded'} kg\n"
+                    f"- Risk Score: {risk_score_text} (represents the probability of developing heart disease)\n"
+                    f"- Timestamp: {data['timestamp']}\n\n"
+                    "When asked about specific metrics, reply with the actual values from this data if available."
+                ]
+            }
+            chat.send_message(context)
 
         # Get response from the model
         response = chat.send_message(message)
