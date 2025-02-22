@@ -7,7 +7,7 @@ def get_user_health_data(user_id):
     Get all health data entries for a specific user
     Returns a list of HealthData objects
     """
-    return HealthData.query.filter_by(user_id=user_id).all()
+    return HealthData.query.filter_by(user_id=user_id).order_by(HealthData.timestamp.desc()).all()
 
 def get_latest_health_data(user_id):
     """
