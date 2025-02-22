@@ -17,4 +17,5 @@ class HealthData(db.Model):
     heart_rate = db.Column(db.Integer)
     temperature = db.Column(db.Float)
     weight = db.Column(db.Float)
+    risk_score = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
