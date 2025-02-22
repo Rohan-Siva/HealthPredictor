@@ -134,6 +134,7 @@ def update_health_data():
             heart_rate=data.get('heart_rate'),
             temperature=data.get('temperature'),
             weight=data.get('weight'),
+            cholesterol = data.get('cholesterol'),
             risk_score=risk_score  # Store the risk score in the database
         )
 
