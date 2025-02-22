@@ -220,32 +220,10 @@ def update_diabetes_data():
 @app.route('/api/diabetes-chat', methods=['POST'])
 @login_required
 def diabetes_chat():
+    from ai_helper import get_diabetes_chatbot_response
     message = request.json.get('message')
-    diabetes_data = DiabetesData.query.filter_by(user_id=current_user.id)\
-        .order_by(DiabetesData.timestamp.desc())\
-        .first()
-
-    if diabetes_data:
-        context = (
-            f"Latest diabetes metrics:\n"
-            f"Blood Glucose: {diabetes_data.blood_glucose_level} mg/dL\n"
-            f"HbA1c Level: {diabetes_data.hba1c_level}%\n"
-            f"BMI: {diabetes_data.bmi}\n"
-            f"Smoking History: {diabetes_data.smoking_history}\n"
-            f"Hypertension: {'Yes' if diabetes_data.hypertension else 'No'}\n"
-            f"Heart Disease: {'Yes' if diabetes_data.heart_disease else 'No'}\n"
-            f"Risk Score: {diabetes_data.risk_score * 100:.1f}%\n"
-            f"Last Updated: {diabetes_data.timestamp.strftime('%Y-%m-%d %H:%M')}\n"
-        )
-    else:
-        context = "No diabetes data available yet."
-
-    try:
-        from ai_helper import get_chatbot_response
-        response = get_chatbot_response(message, context, "diabetes") #added context and "diabetes"
-        return jsonify({'response': response})
-    except Exception as e:
-        return jsonify({'response': f"I apologize, but I'm unable to process your request at the moment. Error: {str(e)}"})
+    response = get_diabetes_chatbot_response(message, current_user.id)
+    return jsonify({'response': response})
 
 @app.route('/logout')
 @login_required
