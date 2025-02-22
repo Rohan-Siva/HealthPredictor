@@ -20,3 +20,17 @@ class HealthData(db.Model):
     risk_score = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     cholesterol = db.Column(db.Float)
+
+class DiabetesData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    gender = db.Column(db.String(10))
+    age = db.Column(db.Float)
+    hypertension = db.Column(db.Boolean)
+    heart_disease = db.Column(db.Boolean)
+    smoking_history = db.Column(db.String(20))
+    bmi = db.Column(db.Float)
+    hba1c_level = db.Column(db.Float)
+    blood_glucose_level = db.Column(db.Float)
+    risk_score = db.Column(db.Float)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
