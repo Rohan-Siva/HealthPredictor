@@ -35,7 +35,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Import models after db initialization to avoid circular imports
-from models import User, HealthData
+from models import User, HealthData, DiabetesData
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -183,19 +183,10 @@ def get_diabetes_history():
 @login_required
 def update_diabetes_data():
     data = request.json
-
+    from diabetes_model import predict_diabetes_risk
     try:
-        # Prepare features for prediction
-        features = np.array([[
-            float(data['age']),
-            float(data['bmi']),
-            float(data['hba1c_level']),
-            float(data['blood_glucose_level'])
-        ]])
-
-        # Scale features and predict
-        features_scaled = diabetes_scaler.transform(features)
-        risk_score = diabetes_model.predict_proba(features_scaled)[0][1]
+        # Get risk score from the model
+        risk_score = predict_diabetes_risk(data)
 
         # Create new diabetes data entry
         diabetes_data = DiabetesData(
@@ -208,7 +199,7 @@ def update_diabetes_data():
             bmi=float(data.get('bmi')),
             hba1c_level=float(data.get('hba1c_level')),
             blood_glucose_level=float(data.get('blood_glucose_level')),
-            risk_score=float(risk_score)
+            risk_score=risk_score
         )
 
         db.session.add(diabetes_data)
@@ -240,13 +231,18 @@ def diabetes_chat():
             f"Blood Glucose: {diabetes_data.blood_glucose_level} mg/dL\n"
             f"HbA1c Level: {diabetes_data.hba1c_level}%\n"
             f"BMI: {diabetes_data.bmi}\n"
+            f"Smoking History: {diabetes_data.smoking_history}\n"
+            f"Hypertension: {'Yes' if diabetes_data.hypertension else 'No'}\n"
+            f"Heart Disease: {'Yes' if diabetes_data.heart_disease else 'No'}\n"
             f"Risk Score: {diabetes_data.risk_score * 100:.1f}%\n"
+            f"Last Updated: {diabetes_data.timestamp.strftime('%Y-%m-%d %H:%M')}\n"
         )
     else:
         context = "No diabetes data available yet."
 
     try:
-        response = get_chatbot_response(message, context, "diabetes")
+        from ai_helper import get_chatbot_response
+        response = get_chatbot_response(message, context, "diabetes") #added context and "diabetes"
         return jsonify({'response': response})
     except Exception as e:
         return jsonify({'response': f"I apologize, but I'm unable to process your request at the moment. Error: {str(e)}"})
