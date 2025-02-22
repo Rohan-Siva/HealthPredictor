@@ -9,6 +9,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     health_data = db.relationship('HealthData', backref='user', lazy=True)
+    diabetes_data = db.relationship('DiabetesData', backref='user', lazy=True)
 
 class HealthData(db.Model):
     id = db.Column(db.Integer, primary_key=True)

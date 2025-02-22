@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-from healthutils import get_health_data_summary
+from healthutils import get_health_data_summary, get_diabetes_data_summary
 
 # Load environment variables
 load_dotenv()
@@ -70,7 +70,7 @@ def get_chatbot_response(message, user_id):
 def get_diabetes_chatbot_response(message, user_id):
     try:
         # Get health data summary
-        summary = get_health_data_summary(user_id)
+        summary = get_diabetes_data_summary(user_id)
         data = summary['latest'] if summary else None
 
         # Create a Gemini model instance
