@@ -62,7 +62,7 @@ def get_chatbot_response(message, user_id):
 
         # Get response from the model
         response = chat.send_message(message)
-        return response.text
+        return response.text.replace("*", "")
 
     except Exception as e:
         return f"I apologize, but I'm unable to process your request at the moment. Please try again later. Error: {str(e)}"
@@ -103,22 +103,26 @@ def get_diabetes_chatbot_response(message, user_id):
             context = {
                 "role": "user",
                 "parts": [
-                    f"Here is the patient's latest health data:\n"
-                    f"- Blood Pressure: {data['blood_pressure'] or 'Not recorded'} mmHg\n"
-                    f"- Heart Rate: {data['heart_rate'] or 'Not recorded'} bpm\n"
-                    f"- Body Temperature: {data['temperature'] or 'Not recorded'} °C\n"
-                    f"- Weight: {data['weight'] or 'Not recorded'} kg\n"
-                    f"- Cholesterol: {data['cholesterol'] or 'Not recorded'} mg/dL\n"
-                    f"- Risk Score: {risk_score_text} (represents the probability of developing heart disease)\n"
-                    f"- Timestamp: {data['timestamp']}\n\n"
-                    "When asked about specific metrics, reply with the actual values from this data if available."
-                ]
-            }
+                f"Here is the patient's latest health data:\n"
+                f"- Gender: {data['gender'] or 'Not recorded'}\n"
+                f"- Age: {data['age'] or 'Not recorded'} years\n"
+                f"- Hypertension: {data['hypertension'] or 'Not recorded'} (Yes/No)\n"
+                f"- Heart Disease: {data['heart_disease'] or 'Not recorded'} (Yes/No)\n"
+                f"- Smoking History: {data['smoking_history'] or 'Not recorded'} (Yes/No)\n"
+                f"- BMI: {data['bmi'] or 'Not recorded'} kg/m²\n"
+                f"- HbA1c Level: {data['hba1c_level'] or 'Not recorded'} %\n"
+                f"- Blood Glucose Level: {data['blood_glucose_level'] or 'Not recorded'} mg/dL\n"
+                f"- Risk Score/Diabetes Risk: {risk_score_text} (represents the probability of developing heart disease)\n"
+                f"- Timestamp: {data['timestamp'] or 'Not recorded'}\n\n"
+                "When asked about specific metrics, reply with the actual values from this data if available."
+    ]
+}
+
             chat.send_message(context)
 
         # Get response from the model
         response = chat.send_message(message)
-        return response.text
+        return response.text.replace("*", "")
 
     except Exception as e:
         return f"I apologize, but I'm unable to process your request at the moment. Please try again later. Error: {str(e)}"

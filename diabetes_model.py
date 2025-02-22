@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 
 # Load and prepare the diabetes prediction model
-diabetes_data = pd.read_csv('attached_assets/diabetes_prediction_dataset.csv')
+diabetes_data = pd.read_csv('diabetes_prediction_dataset.csv')
 X = diabetes_data[['age', 'bmi', 'HbA1c_level', 'blood_glucose_level', 'hypertension', 'heart_disease', 'smoking_history']]
 
 # Convert smoking_history to numeric using one-hot encoding
