@@ -111,7 +111,7 @@ def get_health_history():
 def chat():
     from ai_helper import get_chatbot_response
     message = request.json.get('message')
-    response = get_chatbot_response(message)
+    response = get_chatbot_response(message,current_user.id)
     return jsonify({'response': response})
 
 @app.route('/api/health-data', methods=['POST'])

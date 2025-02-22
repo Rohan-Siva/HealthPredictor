@@ -2,6 +2,7 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
+
 # Load environment variables
 load_dotenv()
 
@@ -10,7 +11,8 @@ genai.configure(api_key=os.getenv('GEMINI_API_KEY'),
                 transport="rest",
                 client_options={"api_endpoint": "generativelanguage.googleapis.com"})
 
-def get_chatbot_response(message):
+def get_chatbot_response(message, user_id):
+
     try:
         # Create a Gemini model instance
         model = genai.GenerativeModel('gemini-pro')
