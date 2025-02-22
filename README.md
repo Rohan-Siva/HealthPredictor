@@ -1,1 +1,1 @@
-# HealthPredictor
+# Medicina.AI
