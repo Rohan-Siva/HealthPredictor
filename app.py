@@ -6,6 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import logging
 from sqlalchemy.orm import DeclarativeBase
+from dotenv import load_dotenv
+
+load_dotenv() # load the url
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -18,7 +21,7 @@ db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 
 # Configure the PostgreSQL database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
@@ -165,4 +168,4 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
