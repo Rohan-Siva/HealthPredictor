@@ -157,6 +157,100 @@ def update_health_data():
             'message': str(e)
         }), 500
 
+@app.route('/diabetes-dashboard')
+@login_required
+def diabetes_dashboard():
+    diabetes_data = DiabetesData.query.filter_by(user_id=current_user.id).order_by(DiabetesData.timestamp.desc()).first()
+    return render_template('diabetes_dashboard.html', diabetes_data=diabetes_data)
+
+@app.route('/api/diabetes-history', methods=['GET'])
+@login_required
+def get_diabetes_history():
+    diabetes_data = DiabetesData.query.filter_by(user_id=current_user.id)\
+        .order_by(DiabetesData.timestamp.desc())\
+        .limit(6)\
+        .all()
+
+    data = [{
+        'blood_glucose_level': d.blood_glucose_level,
+        'hba1c_level': d.hba1c_level,
+        'timestamp': d.timestamp.strftime('%b %d')
+    } for d in reversed(diabetes_data)]
+
+    return jsonify(data)
+
+@app.route('/api/diabetes-data', methods=['POST'])
+@login_required
+def update_diabetes_data():
+    data = request.json
+
+    try:
+        # Prepare features for prediction
+        features = np.array([[
+            float(data['age']),
+            float(data['bmi']),
+            float(data['hba1c_level']),
+            float(data['blood_glucose_level'])
+        ]])
+
+        # Scale features and predict
+        features_scaled = diabetes_scaler.transform(features)
+        risk_score = diabetes_model.predict_proba(features_scaled)[0][1]
+
+        # Create new diabetes data entry
+        diabetes_data = DiabetesData(
+            user_id=current_user.id,
+            gender=data.get('gender'),
+            age=float(data.get('age')),
+            hypertension=bool(int(data.get('hypertension'))),
+            heart_disease=bool(int(data.get('heart_disease'))),
+            smoking_history=data.get('smoking_history'),
+            bmi=float(data.get('bmi')),
+            hba1c_level=float(data.get('hba1c_level')),
+            blood_glucose_level=float(data.get('blood_glucose_level')),
+            risk_score=float(risk_score)
+        )
+
+        db.session.add(diabetes_data)
+        db.session.commit()
+
+        return jsonify({
+            'message': 'Data updated successfully',
+            'risk_score': risk_score
+        })
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating diabetes data: {str(e)}")
+        return jsonify({
+            'error': 'Failed to update diabetes data',
+            'message': str(e)
+        }), 500
+
+@app.route('/api/diabetes-chat', methods=['POST'])
+@login_required
+def diabetes_chat():
+    message = request.json.get('message')
+    diabetes_data = DiabetesData.query.filter_by(user_id=current_user.id)\
+        .order_by(DiabetesData.timestamp.desc())\
+        .first()
+
+    if diabetes_data:
+        context = (
+            f"Latest diabetes metrics:\n"
+            f"Blood Glucose: {diabetes_data.blood_glucose_level} mg/dL\n"
+            f"HbA1c Level: {diabetes_data.hba1c_level}%\n"
+            f"BMI: {diabetes_data.bmi}\n"
+            f"Risk Score: {diabetes_data.risk_score * 100:.1f}%\n"
+        )
+    else:
+        context = "No diabetes data available yet."
+
+    try:
+        response = get_chatbot_response(message, context, "diabetes")
+        return jsonify({'response': response})
+    except Exception as e:
+        return jsonify({'response': f"I apologize, but I'm unable to process your request at the moment. Error: {str(e)}"})
+
 @app.route('/logout')
 @login_required
 def logout():
