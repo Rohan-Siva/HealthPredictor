@@ -3,7 +3,7 @@ from openai import OpenAI
 
 # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
 # do not change this unless explicitly requested by the user
-openai = OpenAI(api_key="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")
+openai = OpenAI(api_key="")
 
 def get_chatbot_response(message):
     try:
